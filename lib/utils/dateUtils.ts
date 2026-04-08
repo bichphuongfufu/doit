@@ -37,19 +37,25 @@ export function isOverdue(endDate: string): boolean {
 }
 
 /**
- * Check if goal should be highlighted (active and within 3 days)
+ * Check if goal should be highlighted (active and within 3 days OR overdue)
+ * Goals are highlighted when urgent (deadline approaching) or overdue
  */
 export function isHighlighted(endDate: string): boolean {
   const days = daysRemaining(endDate);
-  return days >= 0 && days <= 3;
+  // Highlight if within 3 days of deadline, or if overdue
+  return days <= 3;
 }
 
 /**
  * Get human-readable days remaining string
+ * Handles overdue state: "Overdue by X days" when deadline has passed
  */
 export function getDisplayDaysRemaining(endDate: string): string {
   const days = daysRemaining(endDate);
-  if (days < 0) return "Overdue";
+  if (days < 0) {
+    const overdueDays = Math.abs(days);
+    return `Overdue by ${overdueDays} day${overdueDays === 1 ? "" : "s"}`;
+  }
   if (days === 0) return "Due today";
   return `${days} day${days === 1 ? "" : "s"} left`;
 }
